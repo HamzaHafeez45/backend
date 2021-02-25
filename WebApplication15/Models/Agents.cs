@@ -15,5 +15,6 @@ namespace WebApplication15.Models
         public string agentSalary { get; set; }
         public string agentPhone { get; set; }
         public DateTime DOJ { get; set; }
+        public string IEMI { get; set; }
     }
 }

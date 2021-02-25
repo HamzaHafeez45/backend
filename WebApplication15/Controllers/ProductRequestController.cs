@@ -19,11 +19,27 @@ namespace WebApplication15.Models
         public HttpResponseMessage Get()
         {
             DataTable dataTable = new DataTable();
-            string query = @"SELECT ProductRequest.productRequestId, Products.name ,Products.productCode, ProductBrand.name,Categories.name,ProductRequest.requestedQuantity,ProductRequest.requestedPrice
+            string query = @"SELECT ProductRequest.productRequestId, Products.name ,Products.productCode, ProductBrand.name,ProductRequest.requestedQuantity,ProductRequest.requestedPrice
+            FROM ProductRequest
+            INNER JOIN Products ON ProductRequest.productId=Products.productId
+            INNER JOIN ProductBrand ON ProductRequest.brandId=ProductBrand.brandId";
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            using (var Comand = new SqlCommand(query, con))
+            using (var dataAdapter = new SqlDataAdapter(Comand))
+            {
+                Comand.CommandType = CommandType.Text;
+                dataAdapter.Fill(dataTable);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, dataTable);
+        }
+        public HttpResponseMessage Get(int id)
+        {
+            DataTable dataTable = new DataTable();
+            string query = @"SELECT ProductRequest.productRequestId, Products.name ,Products.productCode, ProductBrand.name,ProductRequest.requestedQuantity,ProductRequest.requestedPrice
             FROM ProductRequest
             INNER JOIN Products ON ProductRequest.productId=Products.productId
             INNER JOIN ProductBrand ON ProductRequest.brandId=ProductBrand.brandId
-            INNER JOIN Categories ON ProductRequest.categoryId=Categories.categoryId;";
+            where productRequestId='"+ id +"'";
             using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             using (var Comand = new SqlCommand(query, con))
             using (var dataAdapter = new SqlDataAdapter(Comand))
@@ -52,7 +68,7 @@ namespace WebApplication15.Models
                 }
 
                 con1.Close();
-                string query = "insert into ProductRequest values('" + pr.productId + "','" + pr.brandId + "','" + pr.categoryId + "','"+pr.requestedQuantity+"','" + pr.requestedQuantity * productPrice + "')";
+                string query = "insert into ProductRequest values('" + pr.productId + "','" + pr.brandId + "','"+pr.requestedQuantity+"','" + pr.requestedQuantity * productPrice + "')";
 
                 using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 using (var Comand = new SqlCommand(query, con))
@@ -87,7 +103,7 @@ namespace WebApplication15.Models
 
                 con1.Close();
                 DataTable dataTable = new DataTable();
-                string query = @"update ProductRequest set productId='" + pr.productId + "',brandId='" + pr.brandId + "',categoryId='" + pr.categoryId + "',requestedQuantity='" + pr.requestedQuantity + "',requestedPrice='"+ pr.requestedQuantity*productPrice + "' where productRequestId='" + pr.productRequestId + "' ";
+                string query = @"update ProductRequest set productId='" + pr.productId + "',brandId='" + pr.brandId + "',requestedQuantity='" + pr.requestedQuantity + "',requestedPrice='"+ pr.requestedQuantity*productPrice + "' where productRequestId='" + pr.productRequestId + "' ";
 
                 using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 using (var Comand = new SqlCommand(query, con))
@@ -119,9 +135,9 @@ namespace WebApplication15.Models
                 }
                 return "Deleted Successfully";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "Some Error Occured";
             }
         }
     }

@@ -7,16 +7,33 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using WebApplication15.Models;
 
 namespace WebApplication15.Controllers
 {
+   
     public class CategoriesController : ApiController
     {
+        [HttpGet]
         public HttpResponseMessage Get()
         {
             DataTable dataTable = new DataTable();
             string query = @"SELECT categoryId,name FROM Categories";
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            using (var Comand = new SqlCommand(query, con))
+            using (var dataAdapter = new SqlDataAdapter(Comand))
+            {
+                Comand.CommandType = CommandType.Text;
+                dataAdapter.Fill(dataTable);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, dataTable);
+        }
+        [HttpGet]
+        public HttpResponseMessage Get(int id)
+        {
+            DataTable dataTable = new DataTable();
+            string query = @"SELECT * from Categories where categoryId='"+ id +"'";
             using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             using (var Comand = new SqlCommand(query, con))
             using (var dataAdapter = new SqlDataAdapter(Comand))
@@ -49,7 +66,6 @@ namespace WebApplication15.Controllers
         }
         public string Put(Categories d)
         {
-
             try
             {
                 DataTable dataTable = new DataTable();
@@ -85,9 +101,10 @@ namespace WebApplication15.Controllers
                 }
                 return "Deleted Successfully";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "Some Error Ocuured";
+
             }
         }
     }

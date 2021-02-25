@@ -16,10 +16,26 @@ namespace WebApplication15.Models
         public HttpResponseMessage Get()
         {
             DataTable dataTable = new DataTable();
-            string query = @"SELECT Products.productId, Products.name ,Products.productCode, Products.productPrice, Products.expireable , ProductBrand.name,Categories.name
+            string query = @"SELECT Products.productId, Products.name ,Products.productCode, Products.productPrice,Products.productCost, Products.expireable ,Products.unit, ProductBrand.name
+            FROM Products
+            INNER JOIN ProductBrand ON Products.brandId=ProductBrand.brandId";
+
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            using (var Comand = new SqlCommand(query, con))
+            using (var dataAdapter = new SqlDataAdapter(Comand))
+            {
+                Comand.CommandType = CommandType.Text;
+                dataAdapter.Fill(dataTable);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, dataTable);
+        }
+        public HttpResponseMessage Get(int id)
+        {
+            DataTable dataTable = new DataTable();
+            string query = @"SELECT Products.productId, Products.name ,Products.productCode, Products.productPrice,Products.productCost, Products.expireable ,Products.unit, ProductBrand.name
             FROM Products
             INNER JOIN ProductBrand ON Products.brandId=ProductBrand.brandId
-            INNER JOIN Categories ON Products.categoryId=Categories.categoryId;";
+            Where productId='" + id +"'";
 
             using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             using (var Comand = new SqlCommand(query, con))
@@ -36,7 +52,7 @@ namespace WebApplication15.Models
             try
             {
                 DataTable dataTable = new DataTable();
-                string query = "insert into Products values('" + p.name + "','" + p.productCode + "','" + p.productPrice + "','" + p.expireable + "','" + p.brandId + "','" + p.categoryId + "')";
+                string query = "insert into Products values('" + p.name + "','" + p.productCode + "','" + p.productPrice + "','" + p.expireable + "','" + p.brandId + "','" + p.productCost + "','" + p.unit + "')";
 
                 using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 using (var Comand = new SqlCommand(query, con))
@@ -57,7 +73,7 @@ namespace WebApplication15.Models
             try
             {
                 DataTable dataTable = new DataTable();
-                string query = @"update Products set name='" + p.name + "',productCode='" + p.productCode+ "',productPrice='" + p.productPrice + "',expireable='" + p.expireable + "',brandId='" + p.brandId + "',categoryId='" + p.categoryId + "' where Product_ID='" + p.productId + "' ";
+                string query = @"update Products set name='" + p.name + "',productCode='" + p.productCode+ "',productPrice='" + p.productPrice + "',expireable='" + p.expireable + "',brandId='" + p.brandId + "',productCost='" + p.productCost + "',unit='" + p.unit + "' where ProductId='" + p.productId + "' ";
 
                 using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 using (var Comand = new SqlCommand(query, con))
@@ -89,9 +105,9 @@ namespace WebApplication15.Models
                 }
                 return "Deleted Successfully";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "Some Error Occured";
             }
         }
     }

@@ -11,10 +11,11 @@ namespace WebApplication15.Models
         public string name { get; set; }
         public string productCode { get; set; }
         public int productPrice { get; set; }
+        public int productCost { get; set; }
         public string expireable { get; set; }
         public int brandId{ get; set; }
-        public int categoryId { get; set; }
         public int quantity { get; set; }
+        public string unit { get; set; }
 
     }
 }

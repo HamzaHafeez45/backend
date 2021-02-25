@@ -13,6 +13,7 @@ namespace WebApplication15.Controllers
 {
     public class CityController : ApiController
     {
+        [HttpGet]
         public HttpResponseMessage Get()
         {
             DataTable dataTable = new DataTable();
@@ -28,6 +29,22 @@ namespace WebApplication15.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, dataTable);
         }
 
+        [HttpGet]
+        public HttpResponseMessage Get(int id)
+        {
+            DataTable dataTable = new DataTable();
+            string query = @"select * from City where cityId='"+ id +"'";
+
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            using (var Comand = new SqlCommand(query, con))
+            using (var dataAdapter = new SqlDataAdapter(Comand))
+            {
+                Comand.CommandType = CommandType.Text;
+                dataAdapter.Fill(dataTable);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, dataTable);
+        }
+        [HttpPost]
         public string Post(City c)
         {
             try
@@ -50,15 +67,13 @@ namespace WebApplication15.Controllers
                 return ex.Message;
             }
         }
-
+        [HttpPut]
         public string Put(City c)
         {
-
             try
             {
                 DataTable dataTable = new DataTable();
                 string query = @"update City set name='" + c.name + "' where cityId='" + c.cityId + "' ";
-
                 using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 using (var Comand = new SqlCommand(query, con))
                 using (var dataAdapter = new SqlDataAdapter(Comand))
@@ -73,7 +88,7 @@ namespace WebApplication15.Controllers
                 return ex.Message;
             }
         }
-
+        [HttpDelete]
         public string Delete(int id)
         {
             try
@@ -90,9 +105,9 @@ namespace WebApplication15.Controllers
                 }
                 return "Deleted Successfully";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "Some Error Occured";
             }
         }
     }

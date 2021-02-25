@@ -29,7 +29,19 @@ namespace WebApplication15.Controllers
             }
             return Request.CreateResponse(HttpStatusCode.OK, dataTable);
         }
-
+        public HttpResponseMessage Get(int id)
+        {
+            DataTable dataTable = new DataTable();
+            string query = @"SELECT * FROM Area WHERE areaId='"+ id +"'";
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            using (var Comand = new SqlCommand(query, con))
+            using (var dataAdapter = new SqlDataAdapter(Comand))
+            {
+                Comand.CommandType = CommandType.Text;
+                dataAdapter.Fill(dataTable);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, dataTable);
+        }
         public string Post(Area a)
         {
             try
@@ -54,7 +66,6 @@ namespace WebApplication15.Controllers
 
         public string Put(Area a)
         {
-
             try
             {
                 DataTable dataTable = new DataTable();
@@ -91,9 +102,9 @@ namespace WebApplication15.Controllers
                 }
                 return "Deleted Successfully";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "Some Error Occured";
             }
         }
     }

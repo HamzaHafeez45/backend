@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Owin;
 using Owin;
@@ -14,13 +15,9 @@ namespace WebApplication15
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
+
         }
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddCors(
-                 options => options.AddPolicy("AllowMyOrigin", buider => buider.WithOrigins("http://localhost:3000", "http://sndapp.spikotech.com").AllowAnyMethod().AllowAnyHeader()
-                  ));
-        }
+       
 
     }
 }

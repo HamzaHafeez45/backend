@@ -89,9 +89,9 @@ namespace WebApplication15.Controllers
                 }
                 return "Deleted Successfully";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "Some Error Occured";
             }
         }
     }

@@ -30,6 +30,23 @@ namespace WebApplication15.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, dataTable);
         }
 
+        public HttpResponseMessage Get(int id)
+        {
+            DataTable dataTable = new DataTable();
+            string query = @"SELECT Warehouse.warehouseId, Warehouse.name , Distribution.name
+            FROM Warehouse
+            INNER JOIN Distribution ON Warehouse.distributionId=Distribution.distributionId
+            where warehouseId='"+ id +"'";
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            using (var Comand = new SqlCommand(query, con))
+            using (var dataAdapter = new SqlDataAdapter(Comand))
+            {
+                Comand.CommandType = CommandType.Text;
+                dataAdapter.Fill(dataTable);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, dataTable);
+        }
+
         public string Post(Warehouse w)
         {
             try
@@ -90,9 +107,9 @@ namespace WebApplication15.Controllers
                 }
                 return "Deleted Successfully";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "Some Error Occured";
             }
         }
     }

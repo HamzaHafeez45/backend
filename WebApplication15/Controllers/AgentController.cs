@@ -16,7 +16,7 @@ namespace WebApplication15.Controllers
         public HttpResponseMessage Get()
         {
             DataTable dataTable = new DataTable();
-            string query = @"select agentId,name,agentType,agentCnic,agentSalary,agentPhone,DOJ from dbo.Agent";
+            string query = @"select agentId,name,agentType,agentCnic,agentAddress,agentSalary,agentPhone,DOJ,IEMI from dbo.Agent";
 
             using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             using (var Comand = new SqlCommand(query, con))
@@ -27,13 +27,26 @@ namespace WebApplication15.Controllers
             }
             return Request.CreateResponse(HttpStatusCode.OK, dataTable);
         }
+        public HttpResponseMessage Get(int id)
+        {
+            DataTable dataTable = new DataTable();
+            string query = @"select * from dbo.Agent where agentId='"+ id +"'";
 
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            using (var Comand = new SqlCommand(query, con))
+            using (var dataAdapter = new SqlDataAdapter(Comand))
+            {
+                Comand.CommandType = CommandType.Text;
+                dataAdapter.Fill(dataTable);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, dataTable);
+        }
         public string Post(Agents a)
         {
             try
             {
                 DataTable dataTable = new DataTable();
-                string query = "insert into dbo.Agent values('" + a.name + "','" + a.agentType + "','" + a.agentCnic + "','" + a.agentAddress + "','" + a.agentSalary + "','" + a.agentPhone + "','" + a.DOJ + "')";
+                string query = "insert into dbo.Agent values('" + a.name + "','" + a.agentType + "','" + a.agentCnic + "','" + a.agentAddress + "','" + a.agentSalary + "','" + a.agentPhone + "','" + a.DOJ + "','" + a.IEMI + "')";
 
                 using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 using (var Comand = new SqlCommand(query, con))
@@ -55,7 +68,7 @@ namespace WebApplication15.Controllers
             try
             {
                 DataTable dataTable = new DataTable();
-                string query = @"update Agent set name='" + a.name + "',agentType='" + a.agentType + "',agentCnic='" + a.agentCnic + "',agentAddress='" + a.agentAddress + "',agentSalary='" + a.agentSalary + "',agentPhone='" + a.agentPhone + "',DOJ='" + a.DOJ + "' where Agent_ID='" + a.agentId + "' ";
+                string query = @"update Agent set name='" + a.name + "',agentType='" + a.agentType + "',agentCnic='" + a.agentCnic + "',agentAddress='" + a.agentAddress + "',agentSalary='" + a.agentSalary + "',agentPhone='" + a.agentPhone + "',DOJ='" + a.DOJ + "',IEMI='" + a.IEMI + "' where Agent_ID='" + a.agentId + "' ";
 
                 using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
                 using (var Comand = new SqlCommand(query, con))
@@ -87,9 +100,9 @@ namespace WebApplication15.Controllers
                 }
                 return "Deleted Successfully";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "Some Error Occured";
             }
         }
     }

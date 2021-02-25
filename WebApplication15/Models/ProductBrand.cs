@@ -10,5 +10,6 @@ namespace WebApplication15.Models
         public int brandId { get; set; }
 
         public string name { get; set; }
+        public int categoryId { get; set; }
     }
 }

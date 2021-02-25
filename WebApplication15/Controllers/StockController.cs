@@ -31,6 +31,23 @@ namespace WebApplication15.Controllers
             }
             return Request.CreateResponse(HttpStatusCode.OK, dataTable);
         }
+        public HttpResponseMessage Get(int id)
+        {
+            DataTable dataTable = new DataTable();
+            string query = @"SELECT Stock.stockId, Products.name, Stock.productQuantity, Warehouse.name,Stock.stockPrice
+            FROM Stock
+            INNER JOIN Products ON Stock.productId=Products.productId
+            INNER JOIN Warehouse ON Stock.warehouseId=Warehouse.warehouseId
+             where stockId='"+ id +"'";
+            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
+            using (var Comand = new SqlCommand(query, con))
+            using (var dataAdapter = new SqlDataAdapter(Comand))
+            {
+                Comand.CommandType = CommandType.Text;
+                dataAdapter.Fill(dataTable);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, dataTable);
+        }
 
         public string Post(Stock st)
         {
@@ -116,9 +133,9 @@ namespace WebApplication15.Controllers
                 }
                 return "Deleted Successfully";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ex.Message;
+                return "Some Error Occured";
             }
         }
 
